@@ -1,0 +1,340 @@
+{
+  "$schema": "http://interagent.github.io/interagent-hyper-schema",
+  "definitions": {
+    "app": {
+      "description": "An app represents the program that you would like to deploy and run on Heroku.",
+      "$schema": "http://json-schema.org/draft-04/hyper-schema",
+      "stability": "production",
+      "strictProperties": true,
+      "title": "Heroku Platform API - App",
+      "type": [
+        "object"
+      ],
+      "definitions": {
+        "archived_at": {
+          "description": "when app was archived",
+          "example": "2012-01-01T12:00:00Z",
+          "format": "date-time",
+          "readOnly": true,
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "buildpack_provided_description": {
+          "description": "description from buildpack of app",
+          "example": "Ruby/Rack",
+          "readOnly": true,
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "created_at": {
+          "description": "when app was created",
+          "example": "2012-01-01T12:00:00Z",
+          "format": "date-time",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "git_url": {
+          "description": "git repo URL of app",
+          "example": "git@heroku.com:example.git",
+          "pattern": "^git@heroku\\.com:[a-z][a-z0-9-]{3,30}\\.git$",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "id": {
+          "description": "unique identifier of app",
+          "example": "01234567-89ab-cdef-0123-456789abcdef",
+          "format": "uuid",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "identity": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/app/definitions/id"
+            },
+            {
+              "$ref": "#/definitions/app/definitions/name"
+            }
+          ]
+        },
+        "maintenance": {
+          "default": false,
+          "description": "maintenance status of app",
+          "example": false,
+          "readOnly": false,
+          "type": [
+            "boolean"
+          ]
+        },
+        "name": {
+          "description": "unique name of app",
+          "example": "example",
+          "pattern": "^[a-z][a-z0-9-]{3,30}$",
+          "readOnly": false,
+          "type": [
+            "string"
+          ]
+        },
+        "released_at": {
+          "default": null,
+          "description": "when app was released",
+          "example": "2012-01-01T12:00:00Z",
+          "format": "date-time",
+          "readOnly": true,
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "repo_size": {
+          "default": null,
+          "description": "git repo size in bytes of app",
+          "example": 0,
+          "readOnly": true,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "slug_size": {
+          "default": null,
+          "description": "slug size in bytes of app",
+          "example": 0,
+          "readOnly": true,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "updated_at": {
+          "description": "when app was updated",
+          "example": "2012-01-01T12:00:00Z",
+          "format": "date-time",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "web_url": {
+          "description": "web URL of app",
+          "example": "http://example.herokuapp.com/",
+          "format": "uri",
+          "pattern": "^http://[a-z][a-z0-9-]{3,30}\\.herokuapp\\.com/$",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        }
+      },
+      "links": [
+        {
+          "description": "Create a new app.",
+          "href": "/apps",
+          "method": "POST",
+          "rel": "create",
+          "schema": {
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/app/definitions/name"
+              },
+              "region": {
+                "$ref": "#/definitions/region/definitions/identity"
+              },
+              "stack": {
+                "$ref": "#/definitions/stack/definitions/identity"
+              }
+            },
+            "type": [
+              "object"
+            ]
+          },
+          "targetSchema": {
+            "$ref": "#/definitions/app"
+          },
+          "title": "Create"
+        },
+        {
+          "description": "Delete an existing app.",
+          "href": "/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}",
+          "method": "DELETE",
+          "rel": "destroy",
+          "targetSchema": {
+            "$ref": "#/definitions/app"
+          },
+          "title": "Delete"
+        },
+        {
+          "description": "Info for existing app.",
+          "href": "/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}",
+          "method": "GET",
+          "rel": "self",
+          "targetSchema": {
+            "$ref": "#/definitions/app"
+          },
+          "title": "Info"
+        },
+        {
+          "description": "List existing apps.",
+          "href": "/apps",
+          "method": "GET",
+          "ranges": [
+            "id",
+            "name",
+            "updated_at"
+          ],
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/app"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List"
+        },
+        {
+          "description": "Update an existing app.",
+          "href": "/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}",
+          "method": "PATCH",
+          "rel": "update",
+          "schema": {
+            "properties": {
+              "maintenance": {
+                "$ref": "#/definitions/app/definitions/maintenance"
+              },
+              "name": {
+                "$ref": "#/definitions/app/definitions/name"
+              }
+            },
+            "type": [
+              "object"
+            ]
+          },
+          "targetSchema": {
+            "$ref": "#/definitions/app"
+          },
+          "title": "Update"
+        }
+      ],
+      "properties": {
+        "archived_at": {
+          "$ref": "#/definitions/app/definitions/archived_at"
+        },
+        "buildpack_provided_description": {
+          "$ref": "#/definitions/app/definitions/buildpack_provided_description"
+        },
+        "created_at": {
+          "$ref": "#/definitions/app/definitions/created_at"
+        },
+        "git_url": {
+          "$ref": "#/definitions/app/definitions/git_url"
+        },
+        "id": {
+          "$ref": "#/definitions/app/definitions/id"
+        },
+        "maintenance": {
+          "$ref": "#/definitions/app/definitions/maintenance"
+        },
+        "name": {
+          "$ref": "#/definitions/app/definitions/name"
+        },
+        "owner": {
+          "description": "identity of app owner",
+          "properties": {
+            "email": {
+              "$ref": "#/definitions/account/definitions/email"
+            },
+            "id": {
+              "$ref": "#/definitions/account/definitions/id"
+            }
+          },
+          "strictProperties": true,
+          "type": [
+            "object"
+          ]
+        },
+        "region": {
+          "description": "identity of app region",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/region/definitions/id"
+            },
+            "name": {
+              "$ref": "#/definitions/region/definitions/name"
+            }
+          },
+          "strictProperties": true,
+          "type": [
+            "object"
+          ]
+        },
+        "released_at": {
+          "$ref": "#/definitions/app/definitions/released_at"
+        },
+        "repo_size": {
+          "$ref": "#/definitions/app/definitions/repo_size"
+        },
+        "slug_size": {
+          "$ref": "#/definitions/app/definitions/slug_size"
+        },
+        "stack": {
+          "description": "identity of app stack",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/stack/definitions/id"
+            },
+            "name": {
+              "$ref": "#/definitions/stack/definitions/name"
+            }
+          },
+          "strictProperties": true,
+          "type": [
+            "object"
+          ]
+        },
+        "updated_at": {
+          "$ref": "#/definitions/app/definitions/updated_at"
+        },
+        "web_url": {
+          "$ref": "#/definitions/app/definitions/web_url"
+        }
+      }
+    }
+  },
+  "properties": {
+    "app": {
+      "$ref": "#/definitions/app"
+    }
+  },
+  "type": [
+    "object"
+  ],
+  "description": "The platform API empowers developers to automate, extend and combine Heroku with other services.",
+  "id": "http://api.heroku.com/schema#",
+  "links": [
+    {
+      "href": "https://api.heroku.com",
+      "rel": "self"
+    },
+    {
+      "href": "/schema",
+      "method": "GET",
+      "rel": "self",
+      "targetSchema": {
+        "additionalProperties": true
+      }
+    }
+  ],
+  "title": "Heroku Platform API"
+}
