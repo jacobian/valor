@@ -5,7 +5,8 @@ PARAMETER_REGEX = re.compile(r'\{\([%\/a-zA-Z0-9_-]*\)\}')
 
 class Link(object):
 
-    def __init__(self, session, url, link_schema):
+    def __init__(self, schema, session, url, link_schema):
+        self._schema = schema
         self._session = session
         self._url = url
         self._link = link_schema
