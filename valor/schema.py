@@ -1,4 +1,5 @@
 import json
+import jsonpointer
 
 class Schema(dict):
     """
@@ -17,18 +18,6 @@ class Schema(dict):
                 return cls(json.load(fp))
 
     def resolve_ref(self, ref):
-        return Reference(ref).resolve(self)
-
-class Reference(object):
-    def __init__(self, ref):
         if not ref.startswith('#'):
             raise ValueError("non-fragment references are not supported (got: %s)" % ref)
-        self.ref = ref
-
-    def resolve(self, schema):
-        # Very overly simplisitic - doesn't handle array indexes, etc. However,
-        # works with Heroku's schema, so good enough for a prototype.
-        node = schema
-        for bit in self.ref.split('/')[1:]:
-            node = node[bit]
-        return node
+        return jsonpointer.resolve_pointer(self, ref.lstrip('#'))
