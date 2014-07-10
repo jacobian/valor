@@ -1,10 +1,5 @@
-import os
-import pytest
 from valor.schema import Schema
-
-@pytest.fixture
-def schema_fname():
-    return os.path.join(os.path.dirname(__file__), 'schema.json')
+from .fixtures import schema_fname
 
 def test_schema_from_file_name(schema_fname):
     s = Schema.from_file(schema_fname)
