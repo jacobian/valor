@@ -20,3 +20,5 @@ class Resource(object):
         except KeyError:
             raise AttributeError(attr)
 
+    def __dir__(self):
+        return self._links.keys()

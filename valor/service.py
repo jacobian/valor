@@ -12,3 +12,6 @@ class Service(object):
             if a in self._schema['properties']:
                 return Resource(self._schema, self._session, a)
         raise AttributeError(a)
+
+    def __dir__(self):
+        return [a.replace('-', '_') for a in self._schema['properties']]
