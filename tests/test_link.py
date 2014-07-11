@@ -39,6 +39,11 @@ def test_link_construct_body_missing_required_arg(schema, session):
     with pytest.raises(TypeError):
         link.construct_body({})
 
+def test_link_construct_body_patternProperties(schema, session):
+    link = Service(schema, session).config_var.update
+    body = link.construct_body({'PIZZA_CRUST': 'thin'})
+    assert json.loads(body) == {'PIZZA_CRUST': 'thin'}
+
 def test_link_call(schema, session):
     # This doesn't mock out the *entire* app response, which means if we ever
     # start doing any sort of validation/coercion based on schema, this'll start
@@ -56,3 +61,13 @@ def test_link_call(schema, session):
     assert app_list[0].__class__.__name__ == 'App'
     assert app_list[0].name == 'my-cool-app'
     assert app_list[1].stack == 'bamboo'
+
+def test_link_response_patternProperties(schema, session):
+    session.requests_mock.register_uri(
+        'GET', 'https://api.heroku.com/apps/my-app/config-vars',
+        json={'PIZZA_CRUST': 'thick', 'PIZZA_TOPPINGS': 'sausage,onions'}
+    )
+
+    service = Service(schema, session)
+    config = service.config_var.self('my-app')
+    assert config['PIZZA_CRUST'] == 'thick'

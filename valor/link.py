@@ -41,17 +41,23 @@ class Link(object):
         if is_ref(model_schema):
             model_schema = self._schema.resolve_ref(model_schema['$ref'])
 
+        # If the target schema has patternProperties, the response is a plain
+        # old dict, so just return that. I'm not sure if this is the right way
+        # of handling this; we may want Model to understand patternProperties
+        # instead.
+        if 'patternProperties' in model_schema:
+            return response.json()
+
         # Create a Model subclass representing the expected return object.
         # FIXME: this feels super jank for a name, but is there a better way?
         name = model_schema['title'].split('-', 1)[-1].encode('ascii', 'ignore')
         name = re.sub(r'[^\w]', '', name)
         cls = model_factory(name, self._schema, model_schema)
 
-        response_body = response.json()
         if target_type == 'multi':
-            return [cls(**i) for i in response_body]
+            return [cls(**i) for i in response.json()]
         else:
-            return cls(**response_body)
+            return cls(**response.json())
 
     def interpolate_args(self, args):
         """
@@ -84,7 +90,11 @@ class Link(object):
                 raise TypeError("%s() got unexpected keyword arguments: %s" % (self._name, kwargs.keys()))
             return None
 
-        # FIXME: doesn't handle patternProperties
+        # If we've got patternProperties, then this API takes arbitrary params,
+        # so just punt on any sort of validation.
+        if 'patternProperties' in self._link['schema']:
+            return json.dumps(kwargs)
+
         given_keys = set(kwargs.keys())
         possible_keys = set(self._link['schema']['properties'].keys())
         required_keys = set(self._link['schema'].get('required', []))
