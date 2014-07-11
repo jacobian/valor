@@ -38,3 +38,21 @@ def test_link_construct_body_missing_required_arg(schema, session):
     link._link['schema']['required'] = ['stack']
     with pytest.raises(TypeError):
         link.construct_body({})
+
+def test_link_call(schema, session):
+    # This doesn't mock out the *entire* app response, which means if we ever
+    # start doing any sort of validation/coercion based on schema, this'll start
+    # failing.
+    session.requests_mock.register_uri(
+        'GET', 'https://api.heroku.com/apps',
+        json=[{'name': 'my-cool-app', 'stack': 'cedar'},
+              {'name': 'my-uncool-app', 'stack': 'bamboo'}]
+    )
+
+    service = Service(schema, session)
+    app_list = service.app.instances()
+    assert type(app_list) == list
+    assert len(app_list) == 2
+    assert app_list[0].__class__.__name__ == 'App'
+    assert app_list[0].name == 'my-cool-app'
+    assert app_list[1].stack == 'bamboo'
