@@ -1,5 +1,7 @@
 # Valor
 
+![](https://travis-ci.org/jacobian/valor.svg?branch=master)
+
 Python HTTP clients for APIs represented by JSON Schema.
 
 **This is still super-early days yet, many things probably don't work. Use at your own risk.**
