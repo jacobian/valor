@@ -21,4 +21,10 @@ u'jacob@heroku.com'
 [u'ancient-thicket-4976', u'arcane-reef-4005', ...]
 ```
 
+Then see [heroku.py](https://github.com/jacobian/valor/blob/master/heroku.py) as an example of how this works.
+
 ![](http://img4.wikia.nocookie.net/__cb20130412040940/cso/images/1/19/Notbad.jpg)
+
+----
+
+<small>What's with the name? The Ruby version of the same thing is [Heroics](https://github.com/interagent/heroics). Heroics. Valor. See what I did there?</small>
