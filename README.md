@@ -1,6 +1,6 @@
 # Valor
 
-![](https://travis-ci.org/jacobian/valor.svg?branch=master)
+[![Build Status](https://travis-ci.org/jacobian/valor.svg?branch=master)](https://travis-ci.org/jacobian/valor)
 
 Python HTTP clients for APIs represented by JSON Schema.
 
