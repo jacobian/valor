@@ -43,7 +43,8 @@ class Link(object):
 
         # Create a Model subclass representing the expected return object.
         # FIXME: this feels super jank for a name, but is there a better way?
-        name = model_schema['title'].rsplit('-', 1)[-1].replace(' ', '').encode('ascii', 'ignore')
+        name = model_schema['title'].split('-', 1)[-1].encode('ascii', 'ignore')
+        name = re.sub(r'[^\w]', '', name)
         cls = model_factory(name, self._schema, model_schema)
 
         response_body = response.json()
