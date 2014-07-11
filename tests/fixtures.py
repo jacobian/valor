@@ -1,5 +1,7 @@
 import os
 import pytest
+import requests
+import requests_mock
 from valor import Schema
 
 @pytest.fixture
@@ -12,5 +14,8 @@ def schema():
 
 @pytest.fixture
 def session():
-    # FIXME!
-    return None
+    sess = requests.Session()
+    sess.requests_mock = requests_mock.Adapter()
+    sess.mount('http://', sess.requests_mock)
+    sess.mount('https://', sess.requests_mock)
+    return sess

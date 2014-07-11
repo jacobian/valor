@@ -1,4 +1,5 @@
 from .link import Link
+from .utils import is_ref
 
 class Resource(object):
     def __init__(self, schema, session, resource_name):
@@ -19,8 +20,3 @@ class Resource(object):
         except KeyError:
             raise AttributeError(attr)
 
-def is_ref(prop):
-    """
-    Returns True if prop is a reference.
-    """
-    return prop.keys() == ['$ref']

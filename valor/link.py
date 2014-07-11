@@ -1,5 +1,7 @@
 import re
 import json
+from .utils import is_ref
+from .model import model_factory
 
 PARAMETER_REGEX = re.compile(r'\{\([%\/a-zA-Z0-9_-]*\)\}')
 
@@ -19,8 +21,36 @@ class Link(object):
             data = self.construct_body(kwargs)
         )
 
-        # Clearly more work is needed here...
-        return response.json()
+        # FIXME: handle 206 (partial content) by paginating
+        # FIXME: if-none-match???
+        if response.status_code not in (200, 201, 202):
+            response.raise_for_status()
+
+        # targetSchema is the schema for the object(s) returned by the API call.
+        # It can either be an array, in which case the schema is actually
+        # link.targetSchema.items, or it can be a dict in which case the
+        # targetSchema itself is the schema.
+        model_schema = self._link['targetSchema']
+        if model_schema.get('type') == ['array']:
+            target_type = 'multi'
+            model_schema = model_schema['items']
+        else:
+            target_type = 'single'
+
+        # If the target schema was a ref, resolve it.
+        if is_ref(model_schema):
+            model_schema = self._schema.resolve_ref(model_schema['$ref'])
+
+        # Create a Model subclass representing the expected return object.
+        # FIXME: this feels super jank for a name, but is there a better way?
+        name = model_schema['title'].rsplit('-', 1)[-1].replace(' ', '').encode('ascii', 'ignore')
+        cls = model_factory(name, self._schema, model_schema)
+
+        response_body = response.json()
+        if target_type == 'multi':
+            return [cls(**i) for i in response_body]
+        else:
+            return cls(**response_body)
 
     def interpolate_args(self, args):
         """
