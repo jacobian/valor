@@ -4,16 +4,16 @@ from valor import Service
 from .fixtures import schema, session
 
 def test_link_interpolate_args(schema, session):
-    link = Service(schema, session).app.destroy
+    link = Service(schema, session).app.delete
     assert link.interpolate_args(['my-app']) == 'https://api.heroku.com/apps/my-app'
 
 def test_link_interpolate_args_too_few(schema, session):
-    link = Service(schema, session).app.destroy
+    link = Service(schema, session).app.delete
     with pytest.raises(TypeError):
         link.interpolate_args([])
 
 def test_link_interpolate_args_too_many(schema, session):
-    link = Service(schema, session).app.destroy
+    link = Service(schema, session).app.delete
     with pytest.raises(TypeError):
         link.interpolate_args(['foo', 'bar'])
 
@@ -23,7 +23,7 @@ def test_link_construct_body(schema, session):
     assert json.loads(body) == {'stack': 'cedar'}
 
 def test_link_construct_body_no_body(schema, session):
-    link = Service(schema, session).app.destroy
+    link = Service(schema, session).app.delete
     assert link.construct_body({}) is None
     with pytest.raises(TypeError):
         link.construct_body({'bad': 'arg'})
@@ -55,7 +55,7 @@ def test_link_call(schema, session):
     )
 
     service = Service(schema, session)
-    app_list = service.app.instances()
+    app_list = service.app.list()
     assert type(app_list) == list
     assert len(app_list) == 2
     assert app_list[0].__class__.__name__ == 'App'
@@ -69,5 +69,5 @@ def test_link_response_patternProperties(schema, session):
     )
 
     service = Service(schema, session)
-    config = service.config_var.self('my-app')
+    config = service.config_var.info('my-app')
     assert config['PIZZA_CRUST'] == 'thick'

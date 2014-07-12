@@ -17,9 +17,9 @@ arcane-reef-4005
 ...
 
 $ python -i heroku.py
->>> heroku.account.self().email
+>>> heroku.account.info().email
 u'jacob@heroku.com'
->>> [app.name for app in heroku.app.instances()]
+>>> [app.name for app in heroku.app.list()]
 [u'ancient-thicket-4976', u'arcane-reef-4005', ...]
 ```
 
