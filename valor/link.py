@@ -1,8 +1,8 @@
 import re
 import six
 import json
-from .utils import is_ref
 from .model import model_factory
+from .utils import is_ref, python_attr
 
 PARAMETER_REGEX = re.compile(r'\{\([%\/a-zA-Z0-9_-]*\)\}')
 
@@ -13,7 +13,7 @@ class Link(object):
         self._session = session
         self._url = url
         self._link = link_schema
-        self._name = link_schema['rel']
+        self._name = python_attr(link_schema['title'])
 
     def __call__(self, *args, **kwargs):
         response = self._session.request(

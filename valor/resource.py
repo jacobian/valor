@@ -1,6 +1,5 @@
-import re
 from .link import Link
-from .utils import is_ref
+from .utils import is_ref, python_attr
 
 class Resource(object):
     def __init__(self, schema, session, resource_name):
@@ -13,8 +12,7 @@ class Resource(object):
         root_url = next(l['href'] for l in schema['links'] if l['rel'] == 'self')
         for link in self._defn['links']:
             url = root_url + link['href']
-            attr_name = re.sub(r'[^\w]', '', link['title']).lower()
-            self._links[attr_name] = Link(schema, session, url, link)
+            self._links[python_attr(link['title'])] = Link(schema, session, url, link)
 
     def __getattr__(self, attr):
         try:
