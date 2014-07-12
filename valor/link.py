@@ -1,6 +1,7 @@
 import re
 import six
 import json
+import requests
 from .model import model_factory
 from .utils import is_ref, python_attr
 
@@ -16,11 +17,34 @@ class Link(object):
         self._name = python_attr(link_schema['title'])
 
     def __call__(self, *args, **kwargs):
-        response = self._session.request(
+        # Prepare a request object. We do this instead of using
+        # session.request() so that we can re-use the prepared request further
+        # down if the response is paginated.
+        request = requests.Request(
             method = self._link['method'],
             url = self.interpolate_args(args),
             data = self.construct_body(kwargs)
         )
+        request = self._session.prepare_request(request)
+
+        # FIXME: verify SSL - don't want to just to verify=True because that
+        # makes testing hard, but it should be true by default and overridable
+        # by passing in a different session. Not sure how to make that work
+        # though.
+        response = self._session.send(request)
+
+        # FIXME: are we 100% sure the response is always JSON?
+        response_body = response.json()
+
+        # Handle 206 (partial conteent) by paginating.
+        # See https://devcenter.heroku.com/articles/platform-api-reference#ranges
+        if response.status_code == 206:
+            next_range = response.headers['Next-Range']
+            while next_range:
+                request.headers['range'] = next_range
+                response = self._session.send(request)
+                response_body.extend(response.json())
+                next_range = response.headers.get('Next-Range', None)
 
         # FIXME: handle 206 (partial content) by paginating
         # FIXME: if-none-match???
@@ -47,7 +71,7 @@ class Link(object):
         # of handling this; we may want Model to understand patternProperties
         # instead.
         if 'patternProperties' in model_schema:
-            return response.json()
+            return response_body
 
         # Create a Model subclass representing the expected return object.
         # FIXME: this feels super jank for a name, but is there a better way?
@@ -62,9 +86,9 @@ class Link(object):
         cls = model_factory(name, self._schema, model_schema)
 
         if target_type == 'multi':
-            return [cls(**i) for i in response.json()]
+            return [cls(**i) for i in response_body]
         else:
-            return cls(**response.json())
+            return cls(**response_body)
 
     def interpolate_args(self, args):
         """

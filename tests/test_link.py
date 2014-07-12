@@ -71,3 +71,26 @@ def test_link_response_patternProperties(schema, session):
     service = Service(schema, session)
     config = service.config_var.info('my-app')
     assert config['PIZZA_CRUST'] == 'thick'
+
+def test_link_pagination(schema, session):
+    def response_callback(request, context):
+        assert request.method == 'GET'
+        context.status_code = 206
+        context.headers['content-type'] = 'application/json'
+
+        FAKE_RANGE = ']fake..'
+        if 'Range' in request.headers:
+            assert request.headers['Range'] == FAKE_RANGE
+            return [{'name': 'app3'}, {'name': 'app4'}]
+        else:
+            context.headers['next-range'] = FAKE_RANGE
+            return [{'name': 'app1'}, {'name': 'app2'}]
+
+    session.requests_mock.register_uri(
+        'GET', 'https://api.heroku.com/apps',
+        json = response_callback
+    )
+
+    service = Service(schema, session)
+    apps = service.app.list()
+    assert [a.name for a in apps] == ['app1', 'app2', 'app3', 'app4']
