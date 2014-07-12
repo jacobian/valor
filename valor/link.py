@@ -46,9 +46,8 @@ class Link(object):
                 response_body.extend(response.json())
                 next_range = response.headers.get('Next-Range', None)
 
-        # FIXME: handle 206 (partial content) by paginating
         # FIXME: if-none-match???
-        if response.status_code not in (200, 201, 202):
+        elif response.status_code not in (200, 201, 202):
             response.raise_for_status()
 
         # targetSchema is the schema for the object(s) returned by the API call.
