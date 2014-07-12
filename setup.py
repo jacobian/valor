@@ -8,7 +8,7 @@ setup(
     author_email = "jacob@jacobian.org",
     url = "http://github.com/jacobian/valor",
     py_modules = ['valor'],
-    install_requires = ['requests>=2.3', 'jsonpointer>=1.4'],
+    install_requires = ['requests>=2.3', 'jsonpointer>=1.4', 'six>=1.7.3'],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

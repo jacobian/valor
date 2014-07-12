@@ -1,4 +1,5 @@
 import re
+import six
 import json
 from .utils import is_ref
 from .model import model_factory
@@ -52,6 +53,12 @@ class Link(object):
         # FIXME: this feels super jank for a name, but is there a better way?
         name = model_schema['title'].split('-', 1)[-1]
         name = re.sub(r'[^\w]', '', name)
+
+        # Python 3 excepts text class names; Python 2 expects bytes. No way to
+        # to work around it without version checkking.
+        if six.PY2:
+            name = name.encode('ascii', 'ignore')
+
         cls = model_factory(name, self._schema, model_schema)
 
         if target_type == 'multi':
