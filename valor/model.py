@@ -23,6 +23,9 @@ class Model(object):
         else:
             return object.__repr__(self)
 
+    def __dir__(self):
+        return self._dict.keys()
+
     def identity(self):
         """
         Return the "identity" of this object -- e.g. its ID, name, etc.
