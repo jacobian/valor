@@ -144,6 +144,8 @@ def format_path_parameter(val):
 
     Basically: convert to string, with a special rule for datetime objects.
     """
-    # Blah this shouldn't be str(), it should be unicode, but path encoding
-    # confuses me to much to worry about right now.
-    return val.strftime('%Y-%m-%dT%H:%M:%SZ') if hasattr(val, 'strftime') else str(val)
+    if hasattr(val, 'identity'):
+        val = val.identity()
+    if hasattr(val, 'strftime'):
+        val = val.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return six.text_type(val)

@@ -17,6 +17,14 @@ def test_link_interpolate_args_too_many(schema, session):
     with pytest.raises(TypeError):
         link.interpolate_args(['foo', 'bar'])
 
+def test_link_interpolate_args_identity(schema, session):
+    class C(object):
+        def identity(self):
+            return "my-app"
+
+    link = Service(schema, session).app.delete
+    assert link.interpolate_args([C()]) == 'https://api.heroku.com/apps/my-app'
+
 def test_link_construct_body(schema, session):
     link = Service(schema, session).app.create
     body = link.construct_body({'stack': 'cedar'})
